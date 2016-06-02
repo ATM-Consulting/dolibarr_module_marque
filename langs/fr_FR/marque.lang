@@ -6,3 +6,4 @@ ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.
 MarqueSetup = Configuration du module Marque
 MarqueAbout = A propos du module Marque
 EntityMarque=Marque utilisée
+set_MARQUE_ENTITIES_LINKED=Restreindre l'accès de cette entité aux marques suivantes

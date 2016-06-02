@@ -49,7 +49,10 @@ $action = GETPOST('action', 'alpha');
 if (preg_match('/set_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
-	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
+	$value = GETPOST($code);
+	if(is_array($value))$value = implode(',',$value);
+	
+	if (dolibarr_set_const($db, $code, $value, 'chaine', 0, '', $conf->entity) > 0)
 	{
 		header("Location: ".$_SERVER["PHP_SELF"]);
 		exit;
@@ -57,6 +60,7 @@ if (preg_match('/set_(.*)/',$action,$reg))
 	else
 	{
 		dol_print_error($db);
+		
 	}
 }
 	
@@ -108,13 +112,24 @@ print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 // Example with a yes / no select
 $var=!$var;
 print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("ParamLabel").'</td>';
+print '<td>'.$langs->trans("set_MARQUE_ENTITIES_LINKED").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_CONSTNAME">';
-print $form->selectyesno("CONSTNAME",$conf->global->CONSTNAME,1);
+print '<input type="hidden" name="action" value="set_MARQUE_ENTITIES_LINKED_'.$conf->entity.'">';
+
+$TEntities=array();
+dol_include_once('/multicompany/class/dao_multicompany.class.php');
+$dao = new DaoMulticompany($db);
+$dao->getEntities();
+foreach($dao->entities as &$e) {
+	
+	$TEntities[$e->id] = $e->label;
+	
+}
+
+print $form->multiselectarray('MARQUE_ENTITIES_LINKED_'.$conf->entity, $TEntities, explode(',',$conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity}));
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';

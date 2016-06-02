@@ -104,15 +104,35 @@ class ActionsMarque
 
 	}
 	
-	function pdf_build_address(&$parameters, &$null, &$action, $hookmanager)
+	function formObjectOptions(&$parameters, &$null, &$action, $hookmanager)
 	{
 		global $conf,$user,$langs,$db,$mysoc,$object;
-		$TContext = explode(':', $parameters['context']);
 		
-		if (in_array('pdfgeneration',$TContext))
+		$TContext = explode(':', $parameters['context']);
+		if (in_array('globalcard',$TContext))
 		{
 					
-			
+			if(!empty($conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity}) && GETPOST('attribute') === 'entity_marque') {
+				
+				?>
+				<script type="text/javascript">
+				$(document).ready( function () {
+						var TMarqueEntitiesAllowed = [<?php echo $conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity} ?>];
+					
+						$('#options_entity_marque option').each(function(i,item) {
+							$item = $(item);
+							
+							var entid = parseInt($item.val()); 
+							if(entid>0 && $.inArray(entid, TMarqueEntitiesAllowed) == -1 ) {
+								$item.remove();
+							}
+							
+						});
+				});
+				</script>
+				<?php
+				
+			}
 			
 			
 					
