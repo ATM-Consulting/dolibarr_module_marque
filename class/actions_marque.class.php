@@ -62,12 +62,18 @@ class ActionsMarque
 	function doActions($parameters, &$object, &$action, $hookmanager)
 	{
 		$TContext = explode(':', $parameters['context']);
-		if (in_array('globalcard',$TContext))
+
+		if (in_array('globalcard',$TContext) || (in_array('agefodd', $TContext) && $parameters['location'] == 'document_trainee') )
 		{
 		  	global $langs,$db,$conf,$mysoc;
 			if(!empty($langs)) $langs->load('marque@marque');
 			
-			if( ($action == 'builddoc' || $action =='confirm_validate')
+			if( ($action == 'builddoc' 
+				|| $action =='confirm_validate' 
+				|| (
+					( $action=='create' || $action == 'refresh') && $parameters['location'] == 'document_trainee'
+				)
+			    )
 			 && $object->array_options['options_entity_marque']>0 && $object->array_options['options_entity_marque']!=$conf->entity) {
 			
 				$sourcecompany = &$mysoc;
@@ -113,7 +119,7 @@ class ActionsMarque
 		if (in_array('globalcard',$TContext))
 		{
 					
-			if(!empty($conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity}) && GETPOST('attribute') === 'entity_marque') {
+			if(!empty($conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity}) && (GETPOST('attribute') === 'entity_marque' || $action=='edit' ) ) {
 				
 				?>
 				<script type="text/javascript">

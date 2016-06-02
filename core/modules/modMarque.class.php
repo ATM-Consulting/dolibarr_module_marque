@@ -88,7 +88,7 @@ class modMarque extends DolibarrModules
 		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@marque')) // Set here all workflow context managed by module
 		//                        );
 		$this->module_parts = array(
-			'hooks'=>array('globalcard','pdfgeneration')
+			'hooks'=>array('globalcard','pdfgeneration','agefodd')
 			
 		);
 
@@ -258,11 +258,12 @@ class modMarque extends DolibarrModules
        $extrafields=new ExtraFields($this->db);
 		$res = $extrafields->addExtraField('entity_marque', 'EntityMarque', 'sellist', 0, '', 'commande',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
        
-       $extrafields=new ExtraFields($this->db);
-		$res = $extrafields->addExtraField('entity_marque', 'EntityMarque', 'sellist', 0, '', 'facture',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
+	       $extrafields=new ExtraFields($this->db);
+                $res = $extrafields->addExtraField('entity_marque', 'EntityMarque', 'sellist', 0, '', 'facture',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
        
-		
-
+	       $extrafields=new ExtraFields($this->db);
+                $res = $extrafields->addExtraField('entity_marque', 'EntityMarque', 'sellist', 0, '', 'agefodd_session',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
+       
 		$result=$this->_load_tables('/marque/sql/');
 
 		return $this->_init($sql, $options);
