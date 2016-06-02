@@ -67,7 +67,8 @@ class ActionsMarque
 		  	global $langs,$db,$conf,$mysoc;
 			if(!empty($langs)) $langs->load('marque@marque');
 			
-			if($action == 'builddoc' && $object->array_options['options_entity_marque']>0 && $object->array_options['options_entity_marque']!=$conf->entity) {
+			if( ($action == 'builddoc' || $action =='confirm_validate')
+			 && $object->array_options['options_entity_marque']>0 && $object->array_options['options_entity_marque']!=$conf->entity) {
 			
 				$sourcecompany = &$mysoc;
 				
