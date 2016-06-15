@@ -64,23 +64,27 @@ class ActionsMarque
 		$TContext = explode(':', $parameters['context']);
 		if (in_array('globalcard',$TContext))
 		{
-		  	global $langs,$db,$conf,$mysoc;
+		  	global $langs,$db,$conf,$mysoc,$original_mysoc,$original_conf;
 			if(!empty($langs)) $langs->load('marque@marque');
 			
 			if( ($action == 'builddoc' || $action =='confirm_validate')
 			 && $object->array_options['options_entity_marque']>0 && $object->array_options['options_entity_marque']!=$conf->entity) {
 			
+				$original_mysoc = serialize($mysoc);
+				$original_conf = serialize($conf);
+			
 				$sourcecompany = &$mysoc;
+				$sourceconf = &$conf;
 				
 				dol_include_once('/multicompany/class/dao_multicompany.class.php');
 				
 				$dao = new DaoMulticompany($db);
 				$dao->fetch($object->array_options['options_entity_marque']);
 				
-				$conf->mycompany->dir_output= DOL_DATA_ROOT;
-				if($object->array_options['options_entity_marque']>1)$conf->mycompany->dir_output.='/'.$object->array_options['options_entity_marque'].'/mycompany';
-				else $conf->mycompany->dir_output.='/mycompany'; 
-					
+				$sourceconf->mycompany->dir_output= DOL_DATA_ROOT;
+				if($object->array_options['options_entity_marque']>1)$sourceconf->mycompany->dir_output.='/'.$object->array_options['options_entity_marque'].'/mycompany';
+				else $sourceconf->mycompany->dir_output.='/mycompany'; 
+				
 				$sourcecompany->nom = $sourcecompany->name = $dao->MAIN_INFO_SOCIETE_NOM;
 				$sourcecompany->town = $dao->MAIN_INFO_SOCIETE_TOWN;
 				$sourcecompany->zip = $dao->MAIN_INFO_SOCIETE_ZIP;
@@ -97,12 +101,28 @@ class ActionsMarque
 				$sourcecompany->typent_id = $dao->MAIN_INFO_SOCIETE_FORME_JURIDIQUE;
 				$sourcecompany->idprof1 = $dao->MAIN_INFO_SIREN;
 				$sourcecompany->idprof2 = $dao->MAIN_INFO_SIRET;
+				$sourcecompany->idprof3 = $dao->MAIN_INFO_APE;
+				$sourcecompany->idprof4 = $dao->MAIN_INFO_RCS;
+				$sourcecompany->intra_vat = $dao->MAIN_INFO_TVAINTRA;
 				
-			
+			//var_dump($sourcecompany, $dao);
 			}
 			
 		}
 
+	}
+	
+	function afterPDFCreation(&$parameters, &$null, &$action, $hookmanager) {
+			
+		global $langs,$db,$conf,$mysoc,$original_mysoc,$original_conf;
+		
+		if(!empty($original_mysoc)) {
+				
+			$mysoc = unserialize($original_mysoc); // étragement un clone ne change le pointeur mémoire que du premier niveau...
+			$conf = unserialize($original_conf);
+			
+		}
+		
 	}
 	
 	function formObjectOptions(&$parameters, &$null, &$action, $hookmanager)
