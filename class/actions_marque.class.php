@@ -69,7 +69,8 @@ class ActionsMarque
 			if(!empty($langs)) $langs->load('marque@marque');
 			
 			if( ($action == 'builddoc' 
-				|| $action =='confirm_validate' 
+				|| $action =='confirm_validate'
+				|| $action == 'confirm_valid'
 				|| (
 					( $action=='create' || $action == 'refresh') && $parameters['location'] == 'document_trainee'
 				)
