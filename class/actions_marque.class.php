@@ -63,73 +63,76 @@ class ActionsMarque
 	{
 		$TContext = explode(':', $parameters['context']);
 
-		if (in_array('globalcard',$TContext) || (in_array('agefodd', $TContext) && $parameters['location'] == 'document_trainee') )
+		if (in_array('agefodd', $TContext) && $parameters['location'] == 'document_trainee')
 		{
-		  	global $langs,$db,$conf,$mysoc,$original_mysoc,$original_conf;
-			if(!empty($langs)) $langs->load('marque@marque');
+			global $conf;
 			
-			if( ($action == 'builddoc' 
-				|| $action =='confirm_validate'
-				|| $action == 'confirm_valid'
-				|| (
-					( $action=='create' || $action == 'refresh') && $parameters['location'] == 'document_trainee'
-				)
-			    )
-			 && $object->array_options['options_entity_marque']>0 && $object->array_options['options_entity_marque']!=$conf->entity) {
-			
-				$original_mysoc = serialize($mysoc);
-				$original_conf = serialize($conf);
-			
-				$sourcecompany = &$mysoc;
-				$sourceconf = &$conf;
-				
-				dol_include_once('/multicompany/class/dao_multicompany.class.php');
-				
-				$dao = new DaoMulticompany($db);
-				$dao->fetch($object->array_options['options_entity_marque']);
-				
-				$sourceconf->mycompany->dir_output= DOL_DATA_ROOT;
-				if($object->array_options['options_entity_marque']>1)$sourceconf->mycompany->dir_output.='/'.$object->array_options['options_entity_marque'].'/mycompany';
-				else $sourceconf->mycompany->dir_output.='/mycompany'; 
-				
-				$sourcecompany->nom = $sourcecompany->name = $dao->MAIN_INFO_SOCIETE_NOM;
-				$sourcecompany->town = $dao->MAIN_INFO_SOCIETE_TOWN;
-				$sourcecompany->zip = $dao->MAIN_INFO_SOCIETE_ZIP;
-				$sourcecompany->state = $dao->MAIN_INFO_SOCIETE_STATE;
-				$sourcecompany->logo = $dao->MAIN_INFO_SOCIETE_LOGO;
-				$sourcecompany->logo_small = $dao->MAIN_INFO_SOCIETE_LOGO_SMALL;
-				$sourcecompany->logo_mini = $dao->MAIN_INFO_SOCIETE_LOGO_MINI;
-				
-				$sourcecompany->address = $dao->MAIN_INFO_SOCIETE_ADDRESS;
-				$sourcecompany->phone = $dao->MAIN_INFO_SOCIETE_TEL;
-				$sourcecompany->fax = $dao->MAIN_INFO_SOCIETE_FAX;
-				$sourcecompany->managers = $dao->MAIN_INFO_SOCIETE_MANAGERS;
-				$sourcecompany->capital = $dao->MAIN_INFO_CAPITAL;
-				$sourcecompany->typent_id = $dao->MAIN_INFO_SOCIETE_FORME_JURIDIQUE;
-				$sourcecompany->idprof1 = $dao->MAIN_INFO_SIREN;
-				$sourcecompany->idprof2 = $dao->MAIN_INFO_SIRET;
-				$sourcecompany->idprof3 = $dao->MAIN_INFO_APE;
-				$sourcecompany->idprof4 = $dao->MAIN_INFO_RCS;
-				$sourcecompany->intra_vat = $dao->MAIN_INFO_TVAINTRA;
-				
-			//var_dump($sourcecompany, $dao);
+			if(( $action=='create' || $action == 'refresh')
+				&& !empty($object->array_options['options_entity_marque'])
+				&& $object->array_options['options_entity_marque'] > 0
+				&& $object->array_options['options_entity_marque'] != $conf->entity) {
+				$this->setMySocByEntity($object->array_options['options_entity_marque']);
 			}
-			
 		}
-
+	}
+	
+	function beforePDFCreation(&$parameters, &$object, &$action, $hookmanager) {
+		global $conf;
+		
+		if(!empty($object->array_options['options_entity_marque'])
+			&& $object->array_options['options_entity_marque'] > 0
+			&& $object->array_options['options_entity_marque'] != $conf->entity) {
+		
+			$this->setMySocByEntity($object->array_options['options_entity_marque']);
+		}
 	}
 	
 	function afterPDFCreation(&$parameters, &$null, &$action, $hookmanager) {
-			
-		global $langs,$db,$conf,$mysoc,$original_mysoc,$original_conf;
+		global $conf,$mysoc,$original_mysoc,$original_conf;
 		
 		if(!empty($original_mysoc)) {
-				
 			$mysoc = unserialize($original_mysoc); // étragement un clone ne change le pointeur mémoire que du premier niveau...
 			$conf = unserialize($original_conf);
-			
 		}
+	}
+	
+	function setMySocByEntity($entity) {
+		global $db, $conf, $mysoc, $original_conf, $original_mysoc;
 		
+		$original_mysoc = serialize($mysoc);
+		$original_conf = serialize($conf);
+	
+		$sourcecompany = &$mysoc;
+		$sourceconf = &$conf;
+		
+		dol_include_once('/multicompany/class/dao_multicompany.class.php');
+		
+		$dao = new DaoMulticompany($db);
+		$dao->fetch($entity);
+		
+		$sourceconf->mycompany->dir_output= DOL_DATA_ROOT;
+		if($object->array_options['options_entity_marque']>1)$sourceconf->mycompany->dir_output.='/'.$object->array_options['options_entity_marque'].'/mycompany';
+		else $sourceconf->mycompany->dir_output.='/mycompany'; 
+		
+		$sourcecompany->nom = $sourcecompany->name = $dao->MAIN_INFO_SOCIETE_NOM;
+		$sourcecompany->town = $dao->MAIN_INFO_SOCIETE_TOWN;
+		$sourcecompany->zip = $dao->MAIN_INFO_SOCIETE_ZIP;
+		$sourcecompany->state = $dao->MAIN_INFO_SOCIETE_STATE;
+		$sourcecompany->logo = $dao->MAIN_INFO_SOCIETE_LOGO;
+		$sourcecompany->logo_small = $dao->MAIN_INFO_SOCIETE_LOGO_SMALL;
+		$sourcecompany->logo_mini = $dao->MAIN_INFO_SOCIETE_LOGO_MINI;
+		
+		$sourcecompany->address = $dao->MAIN_INFO_SOCIETE_ADDRESS;
+		$sourcecompany->phone = $dao->MAIN_INFO_SOCIETE_TEL;
+		$sourcecompany->fax = $dao->MAIN_INFO_SOCIETE_FAX;
+		$sourcecompany->managers = $dao->MAIN_INFO_SOCIETE_MANAGERS;
+		$sourcecompany->capital = $dao->MAIN_INFO_CAPITAL;
+		$sourcecompany->typent_id = $dao->MAIN_INFO_SOCIETE_FORME_JURIDIQUE;
+		$sourcecompany->idprof1 = $dao->MAIN_INFO_SIREN;
+		$sourcecompany->idprof2 = $dao->MAIN_INFO_SIRET;
+		$sourcecompany->idprof3 = $dao->MAIN_INFO_APE;
+		$sourcecompany->idprof4 = $dao->MAIN_INFO_RCS;
+		$sourcecompany->intra_vat = $dao->MAIN_INFO_TVAINTRA;
 	}
 	
 	function formObjectOptions(&$parameters, &$null, &$action, $hookmanager)
@@ -139,33 +142,24 @@ class ActionsMarque
 		$TContext = explode(':', $parameters['context']);
 		if (in_array('globalcard',$TContext))
 		{
-					
 			if(!empty($conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity}) && (GETPOST('attribute') === 'entity_marque' || $action=='edit' ) ) {
-				
 				?>
 				<script type="text/javascript">
 				$(document).ready( function () {
-						var TMarqueEntitiesAllowed = [<?php echo $conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity} ?>];
-					
-						$('#options_entity_marque option').each(function(i,item) {
-							$item = $(item);
-							
-							var entid = parseInt($item.val()); 
-							if(entid>0 && $.inArray(entid, TMarqueEntitiesAllowed) == -1 ) {
-								$item.remove();
-							}
-							
-						});
+					var TMarqueEntitiesAllowed = [<?php echo $conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity} ?>];
+				
+					$('#options_entity_marque option').each(function(i,item) {
+						$item = $(item);
+						
+						var entid = parseInt($item.val()); 
+						if(entid>0 && $.inArray(entid, TMarqueEntitiesAllowed) == -1 ) {
+							$item.remove();
+						}
+					});
 				});
 				</script>
 				<?php
-				
 			}
-			
-			
-					
 		}
-		
-
 	}
 }
