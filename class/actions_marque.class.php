@@ -111,7 +111,7 @@ class ActionsMarque
 		$dao->fetch($entity);
 		
 		$sourceconf->mycompany->dir_output= DOL_DATA_ROOT;
-		if($object->array_options['options_entity_marque']>1)$sourceconf->mycompany->dir_output.='/'.$object->array_options['options_entity_marque'].'/mycompany';
+		if($object->array_options['options_entity_marque']>1)$sourceconf->mycompany->dir_output.='/'.$entity.'/mycompany';
 		else $sourceconf->mycompany->dir_output.='/mycompany'; 
 		
 		$sourcecompany->nom = $sourcecompany->name = $dao->MAIN_INFO_SOCIETE_NOM;
