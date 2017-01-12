@@ -124,6 +124,7 @@ class ActionsMarque
 		
 		$sourcecompany->address = $dao->MAIN_INFO_SOCIETE_ADDRESS;
 		$sourcecompany->phone = $dao->MAIN_INFO_SOCIETE_TEL;
+		$sourcecompany->email = $dao->MAIN_INFO_SOCIETE_MAIL;
 		$sourcecompany->fax = $dao->MAIN_INFO_SOCIETE_FAX;
 		$sourcecompany->managers = $dao->MAIN_INFO_SOCIETE_MANAGERS;
 		$sourcecompany->capital = $dao->MAIN_INFO_CAPITAL;
