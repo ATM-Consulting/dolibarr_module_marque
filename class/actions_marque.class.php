@@ -122,6 +122,7 @@ class ActionsMarque
 		$sourcecompany->logo_small = $dao->MAIN_INFO_SOCIETE_LOGO_SMALL;
 		$sourcecompany->logo_mini = $dao->MAIN_INFO_SOCIETE_LOGO_MINI;
 		
+		$sourcecompany->url = $dao->MAIN_INFO_SOCIETE_WEB;
 		$sourcecompany->address = $dao->MAIN_INFO_SOCIETE_ADDRESS;
 		$sourcecompany->phone = $dao->MAIN_INFO_SOCIETE_TEL;
 		$sourcecompany->email = $dao->MAIN_INFO_SOCIETE_MAIL;
