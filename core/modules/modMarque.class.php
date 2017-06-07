@@ -249,20 +249,22 @@ class modMarque extends DolibarrModules
 	 */
 	function init($options='')
 	{
+		global $langs;
 		$sql = array();
+		$langs->load("marque@marque");
 		
 		dol_include_once('/core/class/extrafields.class.php');
         $extrafields=new ExtraFields($this->db);
-		$res = $extrafields->addExtraField('entity_marque', 'EntityMarque', 'sellist', 0, '', 'propal',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
+		$res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'propal',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
        
        $extrafields=new ExtraFields($this->db);
-		$res = $extrafields->addExtraField('entity_marque', 'EntityMarque', 'sellist', 0, '', 'commande',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
+		$res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'commande',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
        
 	       $extrafields=new ExtraFields($this->db);
-                $res = $extrafields->addExtraField('entity_marque', 'EntityMarque', 'sellist', 0, '', 'facture',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
+                $res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'facture',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
        
 	       $extrafields=new ExtraFields($this->db);
-                $res = $extrafields->addExtraField('entity_marque', 'EntityMarque', 'sellist', 0, '', 'agefodd_session',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
+                $res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'agefodd_session',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
        
 		$result=$this->_load_tables('/marque/sql/');
 
