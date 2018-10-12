@@ -58,7 +58,7 @@ class modMarque extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module Marque";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.0.1';
+		$this->version = '1.0.2';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -265,7 +265,11 @@ class modMarque extends DolibarrModules
        
 	       $extrafields=new ExtraFields($this->db);
                 $res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'agefodd_session',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
-       
+
+
+		$extrafields=new ExtraFields($this->db);
+		$res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'expedition',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
+
 		$result=$this->_load_tables('/marque/sql/');
 
 		return $this->_init($sql, $options);
