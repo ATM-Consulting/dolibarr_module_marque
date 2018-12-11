@@ -135,7 +135,8 @@ class ActionsMarque
 //		$sourcecompany->idprof3 = $dao->MAIN_INFO_APE;
 //		$sourcecompany->idprof4 = $dao->MAIN_INFO_RCS;
 //		$sourcecompany->intra_vat = $dao->MAIN_INFO_TVAINTRA;
-		
+
+        $fk_entity_origin = $sourceconf->entity;
 		$sourceconf->entity = $entity;
 		foreach ($sourceconf->global as $attr => &$value)
 		{
@@ -146,6 +147,8 @@ class ActionsMarque
 		
 		$sourceconf->setValues($db);
 		$sourcecompany->setMysoc($sourceconf);
+
+		$sourceconf->entity = $fk_entity_origin; // Dolibarr <= 7.0 ; un fetchObjectLinked() essaye pour les propals de faire un fetch filtré sur l'entité
 	}
 	
 	function formObjectOptions(&$parameters, &$null, &$action, $hookmanager)
