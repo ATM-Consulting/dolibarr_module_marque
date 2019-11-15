@@ -135,6 +135,8 @@ class ActionsMarque
 		$sourcecompany->idprof3 = $dao->MAIN_INFO_APE;
 		$sourcecompany->idprof4 = $dao->MAIN_INFO_RCS;
 		$sourcecompany->intra_vat = $dao->MAIN_INFO_TVAINTRA;
+		$sourcecompany->tva_intra = $dao->MAIN_INFO_TVAINTRA;
+
 	}
 	
 	function formObjectOptions(&$parameters, &$null, &$action, $hookmanager)
