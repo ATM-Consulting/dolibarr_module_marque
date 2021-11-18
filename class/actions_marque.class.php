@@ -105,38 +105,50 @@ class ActionsMarque
 		$sourcecompany = &$mysoc;
 		$sourceconf = &$conf;
 		
-		dol_include_once('/multicompany/class/dao_multicompany.class.php');
+//		dol_include_once('/multicompany/class/dao_multicompany.class.php');
+//		
+//		$dao = new DaoMulticompany($db);
+//		$dao->fetch($entity);
+//		
+//		$sourceconf->mycompany->dir_output= DOL_DATA_ROOT;
+//		if($entity>1)$sourceconf->mycompany->dir_output.='/'.$entity.'/mycompany';
+//		else $sourceconf->mycompany->dir_output.='/mycompany'; 
+//		
+//		$sourcecompany->nom = $sourcecompany->name = $dao->MAIN_INFO_SOCIETE_NOM;
+//		$sourcecompany->town = $dao->MAIN_INFO_SOCIETE_TOWN;
+//		$sourcecompany->zip = $dao->MAIN_INFO_SOCIETE_ZIP;
+//		$sourcecompany->state = $dao->MAIN_INFO_SOCIETE_STATE;
+//		$sourcecompany->logo = $dao->MAIN_INFO_SOCIETE_LOGO;
+//		$sourcecompany->logo_small = $dao->MAIN_INFO_SOCIETE_LOGO_SMALL;
+//		$sourcecompany->logo_mini = $dao->MAIN_INFO_SOCIETE_LOGO_MINI;
+//		
+//		$sourcecompany->url = $dao->MAIN_INFO_SOCIETE_WEB;
+//		$sourcecompany->address = $dao->MAIN_INFO_SOCIETE_ADDRESS;
+//		$sourcecompany->phone = $dao->MAIN_INFO_SOCIETE_TEL;
+//		$sourcecompany->email = $dao->MAIN_INFO_SOCIETE_MAIL;
+//		$sourcecompany->fax = $dao->MAIN_INFO_SOCIETE_FAX;
+//		$sourcecompany->managers = $dao->MAIN_INFO_SOCIETE_MANAGERS;
+//		$sourcecompany->capital = $dao->MAIN_INFO_CAPITAL;
+//		$sourcecompany->typent_id = $dao->MAIN_INFO_SOCIETE_FORME_JURIDIQUE;
+//		$sourcecompany->idprof1 = $dao->MAIN_INFO_SIREN;
+//		$sourcecompany->idprof2 = $dao->MAIN_INFO_SIRET;
+//		$sourcecompany->idprof3 = $dao->MAIN_INFO_APE;
+//		$sourcecompany->idprof4 = $dao->MAIN_INFO_RCS;
+//		$sourcecompany->intra_vat = $dao->MAIN_INFO_TVAINTRA;
 		
-		$dao = new DaoMulticompany($db);
-		$dao->fetch($entity);
+        $fk_entity_origin = $sourceconf->entity;
+		$sourceconf->entity = $entity;
+		foreach ($sourceconf->global as $attr => &$value)
+		{
+			// Recherche des globals liées au info de l'entity, car si non renseignées sur l'entity secondaire (non existante dans llx_const) 
+			// alors l'objet conserve les valeurs d'origines (et on ne veut pas de l'email par exemple de l'entité d'origine)
+			if (substr($attr, 0, 10) == 'MAIN_INFO_') $value = '';
+		}
 		
-		$sourceconf->mycompany->dir_output= DOL_DATA_ROOT;
-		if($entity>1)$sourceconf->mycompany->dir_output.='/'.$entity.'/mycompany';
-		else $sourceconf->mycompany->dir_output.='/mycompany'; 
+		$sourceconf->setValues($db);
+		$sourcecompany->setMysoc($sourceconf);
 		
-		$sourcecompany->nom = $sourcecompany->name = $dao->MAIN_INFO_SOCIETE_NOM;
-		$sourcecompany->town = $dao->MAIN_INFO_SOCIETE_TOWN;
-		$sourcecompany->zip = $dao->MAIN_INFO_SOCIETE_ZIP;
-		$sourcecompany->state = $dao->MAIN_INFO_SOCIETE_STATE;
-		$sourcecompany->logo = $dao->MAIN_INFO_SOCIETE_LOGO;
-		$sourcecompany->logo_small = $dao->MAIN_INFO_SOCIETE_LOGO_SMALL;
-		$sourcecompany->logo_mini = $dao->MAIN_INFO_SOCIETE_LOGO_MINI;
-		$sourcecompany->country_code = $dao->country_code;
-		$sourcecompany->url = $dao->MAIN_INFO_SOCIETE_WEB;
-		$sourcecompany->address = $dao->MAIN_INFO_SOCIETE_ADDRESS;
-		$sourcecompany->phone = $dao->MAIN_INFO_SOCIETE_TEL;
-		$sourcecompany->email = $dao->MAIN_INFO_SOCIETE_MAIL;
-		$sourcecompany->fax = $dao->MAIN_INFO_SOCIETE_FAX;
-		$sourcecompany->managers = $dao->MAIN_INFO_SOCIETE_MANAGERS;
-		$sourcecompany->capital = $dao->MAIN_INFO_CAPITAL;
-		$sourcecompany->typent_id = $dao->MAIN_INFO_SOCIETE_FORME_JURIDIQUE;
-		$sourcecompany->idprof1 = $dao->MAIN_INFO_SIREN;
-		$sourcecompany->idprof2 = $dao->MAIN_INFO_SIRET;
-		$sourcecompany->idprof3 = $dao->MAIN_INFO_APE;
-		$sourcecompany->idprof4 = $dao->MAIN_INFO_RCS;
-		$sourcecompany->intra_vat = $dao->MAIN_INFO_TVAINTRA;
-		$sourcecompany->tva_intra = $dao->MAIN_INFO_TVAINTRA;
-
+		$sourceconf->entity = $fk_entity_origin; // Dolibarr <= 7.0 ; un fetchObjectLinked() essaye pour les propals de faire un fetch filtré sur l'entité
 	}
 	
 	function formObjectOptions(&$parameters, &$null, &$action, $hookmanager)
