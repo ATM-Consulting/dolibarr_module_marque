@@ -66,7 +66,7 @@ class ActionsMarque
 		if (in_array('agefodd', $TContext) && $parameters['location'] == 'document_trainee')
 		{
 			global $conf;
-			
+
 			if(( $action=='create' || $action == 'refresh')
 				&& !empty($object->array_options['options_entity_marque'])
 				&& $object->array_options['options_entity_marque'] > 0
@@ -75,45 +75,50 @@ class ActionsMarque
 			}
 		}
 	}
-	
+
 	function beforePDFCreation(&$parameters, &$object, &$action, $hookmanager) {
 		global $conf;
-		
+
 		if(!empty($object->array_options['options_entity_marque'])
 			&& $object->array_options['options_entity_marque'] > 0
 			&& $object->array_options['options_entity_marque'] != $conf->entity) {
-		
+
 			$this->setMySocByEntity($object->array_options['options_entity_marque']);
 		}
 	}
-	
+
 	function afterPDFCreation(&$parameters, &$null, &$action, $hookmanager) {
 		global $conf,$mysoc,$original_mysoc,$original_conf;
-		
+
 		if(!empty($original_mysoc)) {
 			$mysoc = unserialize($original_mysoc); // étragement un clone ne change le pointeur mémoire que du premier niveau...
 			$conf = unserialize($original_conf);
 		}
 	}
-	
+
+	/**
+	 * @param int $entity
+	 * @throws Exception
+	 */
 	function setMySocByEntity($entity) {
 		global $db, $conf, $mysoc, $original_conf, $original_mysoc;
-		
+
 		$original_mysoc = serialize($mysoc);
 		$original_conf = serialize($conf);
-	
+		$confBackup = unserialize($original_conf);
+
 		$sourcecompany = &$mysoc;
 		$sourceconf = &$conf;
-		
+
 //		dol_include_once('/multicompany/class/dao_multicompany.class.php');
-//		
+//
 //		$dao = new DaoMulticompany($db);
 //		$dao->fetch($entity);
-//		
+//
 //		$sourceconf->mycompany->dir_output= DOL_DATA_ROOT;
 //		if($entity>1)$sourceconf->mycompany->dir_output.='/'.$entity.'/mycompany';
-//		else $sourceconf->mycompany->dir_output.='/mycompany'; 
-//		
+//		else $sourceconf->mycompany->dir_output.='/mycompany';
+//
 //		$sourcecompany->nom = $sourcecompany->name = $dao->MAIN_INFO_SOCIETE_NOM;
 //		$sourcecompany->town = $dao->MAIN_INFO_SOCIETE_TOWN;
 //		$sourcecompany->zip = $dao->MAIN_INFO_SOCIETE_ZIP;
@@ -121,7 +126,7 @@ class ActionsMarque
 //		$sourcecompany->logo = $dao->MAIN_INFO_SOCIETE_LOGO;
 //		$sourcecompany->logo_small = $dao->MAIN_INFO_SOCIETE_LOGO_SMALL;
 //		$sourcecompany->logo_mini = $dao->MAIN_INFO_SOCIETE_LOGO_MINI;
-//		
+//
 //		$sourcecompany->url = $dao->MAIN_INFO_SOCIETE_WEB;
 //		$sourcecompany->address = $dao->MAIN_INFO_SOCIETE_ADDRESS;
 //		$sourcecompany->phone = $dao->MAIN_INFO_SOCIETE_TEL;
@@ -135,26 +140,45 @@ class ActionsMarque
 //		$sourcecompany->idprof3 = $dao->MAIN_INFO_APE;
 //		$sourcecompany->idprof4 = $dao->MAIN_INFO_RCS;
 //		$sourcecompany->intra_vat = $dao->MAIN_INFO_TVAINTRA;
-		
+
         $fk_entity_origin = $sourceconf->entity;
 		$sourceconf->entity = $entity;
 		foreach ($sourceconf->global as $attr => &$value)
 		{
-			// Recherche des globals liées au info de l'entity, car si non renseignées sur l'entity secondaire (non existante dans llx_const) 
+			// Recherche des globals liées au info de l'entity, car si non renseignées sur l'entity secondaire (non existante dans llx_const)
 			// alors l'objet conserve les valeurs d'origines (et on ne veut pas de l'email par exemple de l'entité d'origine)
 			if (substr($attr, 0, 10) == 'MAIN_INFO_') $value = '';
 		}
-		
+
 		$sourceconf->setValues($db);
+
+		// RESTORE MULTIDIR OUTPUT FOR PRODUCT
+		$rootfordata = DOL_DATA_ROOT;
+
+		// If multicompany module is enabled, we redefine the root of data
+		if (!empty($conf->multicompany->enabled) && !empty($conf->entity) && $conf->entity > 1)
+		{
+			$rootfordata .= '/'.$conf->entity;
+		}
+		// Set standard temporary folder name or global override
+		$rootfortemp = empty($conf->global->MAIN_TEMP_DIR) ? $rootfordata : $conf->global->MAIN_TEMP_DIR;
+
+
+		// Module product/service
+		$conf->product->multidir_output 		+= $confBackup->product->multidir_output;
+		$conf->product->multidir_temp			+= $confBackup->product->multidir_temp;
+		$conf->service->multidir_output			+= $confBackup->service->multidir_output;
+		$conf->service->multidir_temp			+= $confBackup->service->multidir_temp;
+
 		$sourcecompany->setMysoc($sourceconf);
-		
+
 		$sourceconf->entity = $fk_entity_origin; // Dolibarr <= 7.0 ; un fetchObjectLinked() essaye pour les propals de faire un fetch filtré sur l'entité
 	}
-	
+
 	function formObjectOptions(&$parameters, &$null, &$action, $hookmanager)
 	{
 		global $conf,$user,$langs,$db,$mysoc,$object;
-		
+
 		$TContext = explode(':', $parameters['context']);
 		if (in_array('globalcard',$TContext))
 		{
@@ -163,11 +187,11 @@ class ActionsMarque
 				<script type="text/javascript">
 				$(document).ready( function () {
 					var TMarqueEntitiesAllowed = [<?php echo $conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity} ?>];
-				
+
 					$('#options_entity_marque option').each(function(i,item) {
 						$item = $(item);
-						
-						var entid = parseInt($item.val()); 
+
+						var entid = parseInt($item.val());
 						if(entid>0 && $.inArray(entid, TMarqueEntitiesAllowed) == -1 ) {
 							$item.remove();
 						}
