@@ -60,7 +60,7 @@ class modMarque extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module Marque";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.0.5';
+		$this->version = '1.0.6';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -91,7 +91,7 @@ class modMarque extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'hooks'=>array('globalcard','pdfgeneration','agefodd')
-			
+
 		);
 
 		// Data directories to create when module is enabled.
@@ -254,17 +254,17 @@ class modMarque extends DolibarrModules
 		global $langs;
 		$sql = array();
 		$langs->load("marque@marque");
-		
+
 		dol_include_once('/core/class/extrafields.class.php');
         $extrafields=new ExtraFields($this->db);
 		$res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'propal',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
-       
+
        $extrafields=new ExtraFields($this->db);
 		$res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'commande',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
-       
+
 	       $extrafields=new ExtraFields($this->db);
                 $res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'facture',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
-       
+
 	       $extrafields=new ExtraFields($this->db);
                 $res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'agefodd_session',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
 
