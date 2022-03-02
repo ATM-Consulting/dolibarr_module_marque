@@ -78,14 +78,17 @@ class ActionsMarque
 	
 	function beforePDFCreation(&$parameters, &$object, &$action, $hookmanager) {
 		global $conf;
-		
 		if(!empty($object->array_options['options_entity_marque'])
 			&& $object->array_options['options_entity_marque'] > 0
 			&& $object->array_options['options_entity_marque'] != $conf->entity) {
 		
 			$this->setMySocByEntity($object->array_options['options_entity_marque']);
 		}
-	}
+
+        if($object->modelpdf == 'gaufrette' && ! empty($object->financement->marque) && $object->financement->marque > 0 && $object->financement->marque != $conf->entity) {
+            $this->setMySocByEntity($object->financement->marque);
+        }
+    }
 	
 	function afterPDFCreation(&$parameters, &$null, &$action, $hookmanager) {
 		global $conf,$mysoc,$original_mysoc,$original_conf;
