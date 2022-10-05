@@ -32,6 +32,10 @@ if (! $res) {
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/marque.lib.php';
 
+/** @var DoliDB $db */
+/** @var Translate $langs */
+/** @var User $user */
+
 // Translations
 $langs->load("marque@marque");
 
@@ -46,12 +50,23 @@ $action = GETPOST('action', 'alpha');
 /*
  * Actions
  */
-if (preg_match('/set_(.*)/',$action,$reg))
+// SPÉ Koesio: marque par défaut sur les dossiers de financement
+if ($action === 'set_MARQUE_DEFAUT_DOSSIER') {
+	$entity = intval(GETPOST('entity', 'int'));
+	$value = GETPOST('value', 'alpha');
+	if ($value === '') {
+		dolibarr_del_const($db, 'MARQUE_DEFAUT_DOSSIER', $entity);
+	} elseif (is_numeric($value)) {
+		dolibarr_set_const($db, 'MARQUE_DEFAUT_DOSSIER', intval($value), 'int', 0, '', $entity);
+	}
+}
+// END SPÉ Koesio
+elseif (preg_match('/set_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
 	$value = GETPOST($code);
 	if(is_array($value))$value = implode(',',$value);
-	
+
 	if (dolibarr_set_const($db, $code, $value, 'chaine', 0, '', $conf->entity) > 0)
 	{
 		header("Location: ".$_SERVER["PHP_SELF"]);
@@ -60,11 +75,11 @@ if (preg_match('/set_(.*)/',$action,$reg))
 	else
 	{
 		dol_print_error($db);
-		
+
 	}
 }
-	
-if (preg_match('/del_(.*)/',$action,$reg))
+
+elseif (preg_match('/del_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
 	if (dolibarr_del_const($db, $code, 0) > 0)
@@ -77,6 +92,7 @@ if (preg_match('/del_(.*)/',$action,$reg))
 		dol_print_error($db);
 	}
 }
+
 
 /*
  * View
@@ -109,7 +125,6 @@ print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 
 
-// Example with a yes / no select
 $var=!$var;
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans("set_MARQUE_ENTITIES_LINKED").'</td>';
@@ -124,9 +139,9 @@ dol_include_once('/multicompany/class/dao_multicompany.class.php');
 $dao = new DaoMulticompany($db);
 $dao->getEntities();
 foreach($dao->entities as &$e) {
-	
+
 	$TEntities[$e->id] = $e->label;
-	
+
 }
 
 print $form->multiselectarray('MARQUE_ENTITIES_LINKED_'.$conf->entity, $TEntities, explode(',',$conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity}));
@@ -134,8 +149,66 @@ print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">'
 print '</form>';
 print '</td></tr>';
 
+foreach ($TEntities as $id => $label) {
+	formDefaultMarqueForEntity($id);
+}
+
 print '</table>';
 
 llxFooter();
 
 $db->close();
+
+
+//function getMarqueEntitiesLinked() {
+//	$sql = /* @lang SQL */
+//		'SELECT c.value FROM ' . MAIN_DB_PREFIX . 'const AS c'
+//		.' WHERE c.name = CONCAT("MARQUE_ENTITIES_LINKED_", c.entity);';
+//}
+
+/**
+ * Affiche une ligne de tableau avec un formulaire permettant de définir la marque par défaut
+ * pour les dossiers de financement de l'entité passée en paramètre.
+ * @param int $entityId
+ * @return void
+ */
+function formDefaultMarqueForEntity($entityId) {
+	global $db, $bc, $var, $conf, $form, $TEntities;
+	$var=!$var;
+	$selectable0 = dolibarr_get_const($db, 'MARQUE_ENTITIES_LINKED_' . $entityId, $entityId);
+	$currentValue = dolibarr_get_const($db, 'MARQUE_DEFAUT_DOSSIER', $entityId);
+//	$confName = 'MARQUE_ENTITIES_LINKED_' . $entityId;
+//	$selectable0 = $conf->global->{$confName} ?? null;
+	if ($selectable0) {
+		$selectable = array_filter($TEntities, function($i) use ($selectable0) {
+			return preg_match("/\b{$i}\b/", $selectable0);
+		}, ARRAY_FILTER_USE_KEY);
+	} else {
+		$selectable = $TEntities;
+	}
+
+	?>
+	<tr <?php echo $bc[$var] ?>>
+		<td>Marque par défaut pour les dossiers de l'entité <?php echo $TEntities[$entityId] ?></td>
+		<td> </td>
+		<td style="text-align: right; min-width: 25%">
+			<form method="post"
+				action="<?php echo dol_buildpath('/marque/admin/marque_setup.php', 1) ?>">
+			<select class="marque-par-defaut"
+					name="value">
+				<option value="">–</option>
+			<?php
+			foreach ($selectable as $s => $label) {
+				$isSelected = $currentValue == $s;
+				$option = '<option value="%s" %s>%s</option>';
+				printf($option, $s, $isSelected ? 'selected' : '', $label);
+			}
+			?>
+			</select>
+			<input type="hidden" name="entity" value="<?php echo $entityId ?>">
+			<button type="submit" name="action" value="set_MARQUE_DEFAUT_DOSSIER" class="button">Modifier</button>
+			</form>
+		</td>
+	</tr>
+	<?php
+}
