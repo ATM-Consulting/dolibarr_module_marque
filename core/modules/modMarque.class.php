@@ -54,13 +54,13 @@ class modMarque extends DolibarrModules
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','other'
 		// It is used to group modules in module setup page
-		$this->family = "ATM";
+		$this->family = "ATM Consulting";
 		// Module label (no space allowed), used if translation string 'ModuleXXXName' not found (where XXX is value of numeric property 'numero' of module)
 		$this->name = preg_replace('/^mod/i','',get_class($this));
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module Marque";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.0.5';
+		$this->version = '1.0.8';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -68,7 +68,7 @@ class modMarque extends DolibarrModules
 		// Name of image file used for this module.
 		// If file is in theme/yourtheme/img directory under name object_pictovalue.png, use this->picto='pictovalue'
 		// If file is in module/img directory under name object_pictovalue.png, use this->picto='pictovalue@module'
-		$this->picto='marque@marque';
+		$this->picto='marque.svg@marque';
 
 		// Defined all module parts (triggers, login, substitutions, menus, css, etc...)
 		// for default path (eg: /marque/core/xxxxx) (0=disable, 1=enable)
@@ -91,7 +91,7 @@ class modMarque extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'hooks'=>array('globalcard','pdfgeneration','agefodd')
-			
+
 		);
 
 		// Data directories to create when module is enabled.
@@ -254,17 +254,17 @@ class modMarque extends DolibarrModules
 		global $langs;
 		$sql = array();
 		$langs->load("marque@marque");
-		
+
 		dol_include_once('/core/class/extrafields.class.php');
         $extrafields=new ExtraFields($this->db);
 		$res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'propal',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
-       
+
        $extrafields=new ExtraFields($this->db);
 		$res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'commande',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
-       
+
 	       $extrafields=new ExtraFields($this->db);
                 $res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'facture',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
-       
+
 	       $extrafields=new ExtraFields($this->db);
                 $res = $extrafields->addExtraField('entity_marque', $langs->trans('EntityMarque'), 'sellist', 0, '', 'agefodd_session',0,0,'',serialize(array('options'=>array('entity:label:rowid'=>null))));
 
