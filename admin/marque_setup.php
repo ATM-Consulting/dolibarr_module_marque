@@ -130,7 +130,7 @@ foreach($dao->entities as &$e) {
 
 }
 
-print $form->multiselectarray('MARQUE_ENTITIES_LINKED_'.$conf->entity, $TEntities, explode(',',$conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity}));
+print $form->multiselectarray('MARQUE_ENTITIES_LINKED_'.$conf->entity, $TEntities, explode(',',getDolGlobalString('MARQUE_ENTITIES_LINKED_'.$conf->entity)));
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';
