@@ -25,7 +25,7 @@
 
 function marqueAdminPrepareHead()
 {
-    global $langs, $conf;
+    global $langs, $conf, $object;
 
     $langs->load("marque@marque");
 

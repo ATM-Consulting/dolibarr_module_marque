@@ -26,7 +26,9 @@
 /**
  * Class ActionsMarque
  */
-class ActionsMarque
+require_once __DIR__.'/../backport/v19/core/class/commonhookactions.class.php';
+
+class ActionsMarque extends marque\RetroCompatCommonHookActions
 {
 	/**
 	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
@@ -161,7 +163,7 @@ class ActionsMarque
 			$rootfordata .= '/'.$conf->entity;
 		}
 		// Set standard temporary folder name or global override
-		$rootfortemp = empty($conf->global->MAIN_TEMP_DIR) ? $rootfordata : $conf->global->MAIN_TEMP_DIR;
+		$rootfortemp = getDolGlobalString('MAIN_TEMP_DIR', $rootfordata);
 
 
 		// Module product/service
@@ -182,11 +184,11 @@ class ActionsMarque
 		$TContext = explode(':', $parameters['context']);
 		if (in_array('globalcard',$TContext))
 		{
-			if(!empty($conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity}) && (GETPOST('attribute') === 'entity_marque' || $action=='edit' ) ) {
+			if(!empty(getDolGlobalString('MARQUE_ENTITIES_LINKED_'.$conf->entity)) && (GETPOST('attribute') === 'entity_marque' || $action=='edit' ) ) {
 				?>
 				<script type="text/javascript">
 				$(document).ready( function () {
-					var TMarqueEntitiesAllowed = [<?php echo $conf->global->{'MARQUE_ENTITIES_LINKED_'.$conf->entity} ?>];
+					var TMarqueEntitiesAllowed = [<?php echo getDolGlobalString('MARQUE_ENTITIES_LINKED_'.$conf->entity) ?>];
 
 					$('#options_entity_marque option').each(function(i,item) {
 						$item = $(item);
