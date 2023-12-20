@@ -90,11 +90,12 @@ class ActionsMarque extends marque\RetroCompatCommonHookActions
 	}
 
 	function afterPDFCreation(&$parameters, &$null, &$action, $hookmanager) {
-		global $conf,$mysoc,$original_mysoc,$original_conf;
+		global $db,$conf,$mysoc,$original_mysoc,$original_conf;
 
 		if(!empty($original_mysoc)) {
 			$mysoc = unserialize($original_mysoc); // étragement un clone ne change le pointeur mémoire que du premier niveau...
 			$conf = unserialize($original_conf);
+			$mysoc->db = $db;
 		}
 	}
 
