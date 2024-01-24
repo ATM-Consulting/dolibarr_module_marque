@@ -1,7 +1,13 @@
 # Identity switch - Changelog
+
+
+
+## Release 1.1
+
 - FIX : Compat V19 - 1.1.0
    Change dolibarr compatibility < 12
-## 1.0
+
+## Release 1.0
 - FIX : Compat V16 - 1.0.8
   - add langs
   - fix new token in setup
