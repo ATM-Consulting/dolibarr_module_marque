@@ -159,7 +159,7 @@ class ActionsMarque extends marque\RetroCompatCommonHookActions
 		$rootfordata = DOL_DATA_ROOT;
 
 		// If multicompany module is enabled, we redefine the root of data
-		if (!empty($conf->multicompany->enabled) && !empty($conf->entity) && $conf->entity > 1)
+		if (isModEnabled('multicompany') && !empty($conf->entity) && $conf->entity > 1)
 		{
 			$rootfordata .= '/'.$conf->entity;
 		}
