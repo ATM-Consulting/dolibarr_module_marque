@@ -5,6 +5,7 @@
 
 
 ## Release 1.2
+- FIX : de la restriction du champ marque utilisé à la création d'un objet si la conf correspondante est renseignée  - *03/10/2024* - 1.2.1
 
 - FIX: Compat v20  
   Changed Dolibarr compatibility range to 16 min - 20 max - *28/07/2024* - 1.2.0
