@@ -89,6 +89,8 @@ class ActionsMarque
         if(in_array($object->modelpdf, getListOfModels($db, 'financement')) && ! empty($object->financement->marque) && $object->financement->marque > 0 && $object->financement->marque != $conf->entity) {
             $this->setMySocByEntity($object->financement->marque);
         }
+
+		return 0;
     }
 
 	function afterPDFCreation(&$parameters, &$null, &$action, $hookmanager) {
@@ -98,6 +100,8 @@ class ActionsMarque
 			$mysoc = unserialize($original_mysoc); // étragement un clone ne change le pointeur mémoire que du premier niveau...
 			$conf = unserialize($original_conf);
 		}
+
+		return 0;
 	}
 
 	function setMySocByEntity($entity) {
