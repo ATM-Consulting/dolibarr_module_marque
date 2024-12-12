@@ -5,6 +5,7 @@
 
 
 ## Release 1.2
+- FIX : compat 21  - *12/12/2024* - 1.2.2
 - FIX : de la restriction du champ marque utilisé à la création d'un objet si la conf correspondante est renseignée  - *03/10/2024* - 1.2.1
 
 - FIX: Compat v20  
